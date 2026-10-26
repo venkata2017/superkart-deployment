@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend_files
+    ports:
+      - "7860:7860"
+    networks:
+      - superkart_network
+
+  frontend:
+    build:
+      context: ./frontend_files
+    ports:
+      - "7861:7861"
+    environment:
+      - BACKEND_URL=http://backend:7860
+    networks:
+      - superkart_network
+    depends_on:
+      - backend
+
+networks:
+  superkart_network:
+    driver: bridge

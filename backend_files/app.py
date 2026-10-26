@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify
-
 import pandas as pd
 import joblib
 
 model = joblib.load("superkart_model.joblib")
 
-app = Flask(__name__)
+# Fix: Change variable name from 'app' to 'superkart_api'
+superkart_api = Flask(__name__)
 
 FEATURE_COLUMNS = [
     "Product_Weight",
@@ -21,7 +21,6 @@ FEATURE_COLUMNS = [
 ]
 
 @superkart_api.get("/")
-
 def home():
     return "<h1>SuperKart Sales prediction API is running</h1>"
 
@@ -30,9 +29,10 @@ def predict():
     try:
         # Get JSON data from the request
         data = request.get_json()
-        input_df = pd.DataFrame([payload], columns=FEATURE_COLUMNS)
+        # Fix: Use 'data' instead of undefined variable 'payload'
+        input_df = pd.DataFrame([data], columns=FEATURE_COLUMNS)
         prediction = model.predict(input_df)[0]
-        return jsonify({"prediction": prediction})
+        return jsonify({"prediction": float(prediction)})
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -43,7 +43,7 @@ def predictbatch():
         file = request.files["file"]
         input_df = pd.read_csv(file)
         predictions = model.predict(input_df)
-        output = {str(index): prediction for index, prediction in enumerate(predictions)}
+        output = {str(index): float(prediction) for index, prediction in enumerate(predictions)}
         return jsonify(output)
     except Exception as e:
         return jsonify({"error": str(e)})
